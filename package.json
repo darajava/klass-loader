@@ -1,7 +1,7 @@
 {
   "name": "klass-loader",
   "version": "0.0.1",
-  "description": "Encapsulate CSS without thinking about it",
+  "description": "Seamless CSS encapsulation",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
