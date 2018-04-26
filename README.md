@@ -2,7 +2,7 @@
 #
 
 ## About
-`klass-loader` is an improvment to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive stucture of presentational components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
+`klass-loader` is an improvement to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive structure of presentation components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
 
 ## Usage
 Once the loader is correctly installed, usage is as follows:
@@ -39,21 +39,21 @@ const Component = (props) => {
 export default Component;
  ```
  
-This minimal setup will apply the corresponding classes in a file called `styles.css` in the same directory as the component. (LESS may come later, it needs experimentation). An example heirarchy is shown here:
+This minimal setup will apply the corresponding classes in a file called `styles.css` in the same directory as the component. (LESS may come later, it needs experimentation). An example hierarchy is shown here:
 
 ```
 src
 ├── App.js
-│   └── views
-│       ├── NoStyleButton
-│       │   ├── NoStyleButton.js
-│       ├── Progress
-│       │   ├── Progress.js
-│       │   └── styles.css
-│       ├── Question
-│       │   ├── Question.js
-│       │   ├── Answer.js
-│       │   └── styles.css
+│   └── views
+│       ├── NoStyleButton
+│       │   ├── NoStyleButton.js
+│       ├── Progress
+│       │   ├── Progress.js
+│       │   └── styles.css
+│       ├── Question
+│       │   ├── Question.js
+│       │   ├── Answer.js
+│       │   └── styles.css
 ```
 
 A component *requires* a corresponding stylesheet in the same directory only if the component declares a `klass` attribute as shown above. If there are multiple components in the same folder, they will all be based on the same stylesheet.
