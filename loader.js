@@ -1,16 +1,20 @@
-var babel = require("babel-core");
-var loaderUtils = require('loader-utils');
-var fs = require('fs');
-var beautify = require('js-beautify').js_beautify;
+let babel = require("babel-core");
+let loaderUtils = require('loader-utils');
+let fs = require('fs');
+let beautify = require('js-beautify').js_beautify;
 
-function replaceKlassAttributes(source) {
-  var source = (beautify(source));
 
-  var lines = source.split(/\r?\n/);
+let replaceKlassAttributes = (s, ctx) => {
+  let lines = beautify(s).split(/\r?\n/);
+  
   for (let i = 0; i < lines.length; i++) {
     if (/^ *klass: /.test(lines[i])) {
-      lines[i] = lines[i].replace(/ *klass: (.*),/, function(a, b) {
-        return ` className: styles[${b}],`
+      lines[i] = lines[i].replace(/ *klass: (.*),/, (line, expr) => {
+        expr = '(' + expr + ')';
+        let warning = `(() => {throw new Error('Warning: no matching klass for "' + ${ expr } + '" in ${ ctx.resourcePath }')})()`;
+
+        // add warning inline because we can't append them since the variables will be out of scope
+        return ` className: styles[${expr}] + ((typeof styles[${expr}] === 'undefined' && ${expr}.length && ${warning}) ? '' : ''),`
       });
     }
   }
@@ -19,13 +23,14 @@ function replaceKlassAttributes(source) {
 
 }
 
+
 module.exports = function(source, map) {
   const options = loaderUtils.getOptions(this);
 
   if (source.indexOf("klass: ") !== -1) {
     if (fs.existsSync(this.context + "/styles.css")) {
       //console.log(source);
-      source = replaceKlassAttributes(source);
+      source = replaceKlassAttributes(source, this);
       source = "import styles from './styles.css';\n" + source;
       //console.log(source);
     } else {
