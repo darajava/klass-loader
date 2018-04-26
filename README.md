@@ -99,6 +99,9 @@ Next, set up `klass-loader` itself. To do this, place the loader just before `ba
 },
 ```
 
+## Example repo
+An example of a project using `klass-loader` can be found [here](https://github.com/darajava/language-learner).
+
 ## Options
 Coming soon!
 
