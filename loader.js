@@ -2,24 +2,36 @@ let babel = require("babel-core");
 let loaderUtils = require('loader-utils');
 let fs = require('fs');
 let beautify = require('js-beautify').js_beautify;
+let minify = require("babel-minify");
+
 
 
 let replaceKlassAttributes = (s, ctx) => {
   let lines = beautify(s).split(/\r?\n/);
   
+  console.log(JSON.stringify(lines, null, 2))
   for (let i = 0; i < lines.length; i++) {
     if (/^ *klass: /.test(lines[i])) {
-      lines[i] = lines[i].replace(/ *klass: (.*),/, (line, expr) => {
-        expr = '(' + expr + ')';
-        let warning = `(() => {throw new Error('Warning: no matching klass for "' + ${ expr } + '" in ${ ctx.resourcePath }')})()`;
+      lines[i] = lines[i].replace(/( *)klass: (.*)$/, (line, spaces, expr) => {
+        
+        expr = '(' + expr.replace(/(^,)|(,$)/g, "") + ')';
+        let warning = `(function(){console.warn('Warning: [klass-loader] no matching \`klass\` attribute for \\'' + ${ expr } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }')})()`;
 
         // add warning inline because we can't append them since the variables will be out of scope
-        return ` className: styles[${expr}] + ((typeof styles[${expr}] === 'undefined' && ${expr}.length && ${warning}) ? '' : ''),`
+        return `${spaces}className: styles[${expr}] + ((typeof styles[${expr}] === 'undefined' && ${expr}.length && ${warning}) ? '' : ''),`
       });
     }
   }
-  console.log(JSON.stringify(lines, null, 2))
-  return lines.join('\n');
+  console.log( minify(lines.join('\n'), {
+    mangle: {
+      keepClassName: true
+    }
+  }).code);
+  return minify(lines.join('\n'), {
+    mangle: {
+      keepClassName: true
+    }
+  }).code;
 
 }
 
@@ -27,7 +39,7 @@ let replaceKlassAttributes = (s, ctx) => {
 module.exports = function(source, map) {
   const options = loaderUtils.getOptions(this);
 
-  if (source.indexOf("klass: ") !== -1) {
+  if (source.indexOf("klass") !== -1) {
     if (fs.existsSync(this.context + "/styles.css")) {
       //console.log(source);
       source = replaceKlassAttributes(source, this);
@@ -41,5 +53,5 @@ klass-loader error:
     }
   }
  
-  return `${source}`;
+  return source;
 };

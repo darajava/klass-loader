@@ -14,6 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "babel-core": "^6.26.0",
+    "babel-minify": "^0.4.0",
     "esprima": "^4.0.0",
     "esprima-fb": "^15001.1001.0-dev-harmony-fb",
     "js-beautify": "^1.7.5",
