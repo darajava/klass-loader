@@ -7,21 +7,6 @@
 ## Usage
 Once the loader is correctly installed, usage is as follows:
 
-### styles.css
-```css
-.component {
-  padding: 10px;
-}
-
-.child-0 {
-  background-color: red; 
-}
-
-.child-1 {
-  background-color: blue;
-}
-```
-
 ### Component.jsx
 ```javascript
 import React from 'react';
@@ -38,6 +23,21 @@ const Component = (props) => {
 
 export default Component;
  ```
+ 
+### styles.css
+```css
+.component {
+  padding: 10px;
+}
+
+.child-0 {
+  background-color: red; 
+}
+
+.child-1 {
+  background-color: blue;
+}
+```
  
 This minimal setup will apply the corresponding classes in a file called `styles.css` in the same directory as the component. (LESS may come later, it needs experimentation). An example hierarchy is shown here:
 
@@ -99,10 +99,10 @@ Next, set up `klass-loader` itself. To do this, place the loader just before `ba
 },
 ```
 
-## FAQ / Integration
+## Options
 Coming soon!
 
-## Options
+## FAQ / Integration
 Coming soon!
 
 ## TypeScript support
