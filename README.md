@@ -1,11 +1,9 @@
 ![](https://i.imgur.com/S0v8XBG.png)
----
 
-## About
 `klass-loader` is an improvement to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive structure of presentation components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
 
 ## Usage
-Once the loader is correctly installed, usage is as follows:
+Once the loader is correctly installed, there is no need to import any libraries or reference CSS files. `klass` attributes are evaluated as vanilla CSS selector strings, similar to the `class` tag in HTML. This attribute can be treated as a language feature in the same way `class` was in the olden days. Usage is as follows:
 
 ### Component.jsx
 ```javascript
@@ -39,7 +37,7 @@ export default Component;
 }
 ```
  
-This minimal setup will apply the corresponding classes in a file called `styles.css` in the same directory as the component. (LESS may come later, it needs experimentation). An example hierarchy is shown here:
+This minimal setup will apply the corresponding classes in a file called `styles.css` in the same directory as the component. (LESS might work too, but it's untested so far). An example hierarchy is shown here:
 
 ```
 src
@@ -58,6 +56,9 @@ src
 
 A component *requires* a corresponding stylesheet in the same directory only if the component declares a `klass` attribute as shown above. If there are multiple components in the same folder, they will all be based on the same stylesheet.
 
+### Using global styles
+In the `styles.css` file, the webpack implementation of `css-modules` allows us compose selectors, import selectors from other stylesheets, and more! Further info on [their README](https://github.com/css-modules/css-modules#dependencies). Alternatively, `className` can still be used alongside `klass` to reference global CSS files.
+
 ## Install & Configuration
 
 #### Install
@@ -75,7 +76,7 @@ Set up and install `style-loader` and `css-loader`:
         modules: true,
         localIdentName: "[name]__[local]___[hash:base64:5]",  
       },
-    }, // TODO: Update example to use newer syntax
+    }, // TODO: Update example to use newer webpack syntax
     
 Make sure to set the `localIdentName` to something like the above to enable encapsulation. More details on how to install can be found on their [README](https://github.com/webpack-contrib/css-loader).
 
@@ -86,6 +87,7 @@ Next, set up `klass-loader` itself. To do this, place the loader just before `ba
   test: /\.(js|jsx|mjs)$/,
   include: paths.appSrc,
   use: [
+    // other loaders
     {
       loader: path.resolve('klass-loader'),
     },
