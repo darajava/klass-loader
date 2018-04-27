@@ -37,7 +37,7 @@ export default Component;
 }
 ```
  
-This minimal setup will apply the corresponding classes in a file called `styles.css` in the same directory as the component. (LESS might work too, but it's untested so far). An example hierarchy is shown here:
+This minimal setup will apply classes in a corresponding file called `styles.css` in the same directory as the component. (LESS might work too, but it's untested so far). An example hierarchy is shown here:
 
 ```
 src
