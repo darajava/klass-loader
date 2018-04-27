@@ -5,7 +5,6 @@ let beautify = require('js-beautify').js_beautify;
 let minify = require("babel-minify");
 
 
-
 let replaceKlassAttributes = (s, ctx) => {
   let lines = beautify(s).split(/\r?\n/);
   
@@ -15,10 +14,18 @@ let replaceKlassAttributes = (s, ctx) => {
       lines[i] = lines[i].replace(/( *)klass: (.*)$/, (line, spaces, expr) => {
         
         expr = '(' + expr.replace(/(^,)|(,$)/g, "") + ')';
-        let warning = `(function(){console.warn('Warning: [klass-loader] no matching \`klass\` attribute for \\'' + ${ expr } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }')})()`;
+
+        let warning = (item) => {
+           return `console.warn('Warning: [klass-loader] no matching \`klass\` attribute for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }')`;
+        }
+        let splitExpr = `(${expr}).split(/ +/).map(function(c){
+                                                    if (typeof styles[c] === "undefined")
+                                                      ${ warning('c') };
+                                                    return styles[c] }).join(' ')`;
+        let isUndefined = `(typeof styles[${expr}] === 'undefined' && ${expr}.length )`;
 
         // add warning inline because we can't append them since the variables will be out of scope
-        return `${spaces}className: styles[${expr}] + ((typeof styles[${expr}] === 'undefined' && ${expr}.length && ${warning}) ? '' : ''),`
+        return `${spaces}className: (${ splitExpr }),`
       });
     }
   }
