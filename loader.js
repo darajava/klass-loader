@@ -11,17 +11,26 @@ let findClassNames = (lineno, spaces, lines) => {
   let spaceRE = new RegExp('^' + spaces);
   let classNameRe = new RegExp('^' + spaces + "className: (.*)");
 
-  for (let i = lineno - 10; i < lineno + 10; i++) {
-    // uncomment to visualise
-    console.log('SNIP: ', lines[i]);
-  }
+  // uncomment to visualise
+  // console.log('-----')
+  // for (let i = lineno - 7; i < lineno + 7; i++) {
+  //   console.log('SNIP findClassNames:' + (i == lineno ? '-->' : '  '), lines[i]);
+  // }
 
   // this loop is intentional
+  // go forward in lines until we come accross shallower indentation
   do {} while (spaceRE.test(lines[++lineno]));
 
+  // go backwards in lines so we go through all properties in the object
   while (spaceRE.test(lines[--lineno])) {
+    // if we find an additional classname attribute in the object
     if (classNameRe.test(lines[lineno])) {
+      // return the expression found in it and return it without the comma
       return lines[lineno].replace(classNameRe, (line, expr) => {
+        // if expression is multiline, get it as below
+        if (!expr.endsWith(',')) {
+          expr += getRestOfExpression(lineno, spaces, lines);
+        }
         lines[lineno] = ''; // delete the line containing the remaining classes
         
         return expr.replace(/,$/, '');
@@ -32,6 +41,36 @@ let findClassNames = (lineno, spaces, lines) => {
   return '""'; 
 }; 
 
+let getRestOfExpression = (lineno, spaces, lines) => {
+  let spaceRE = new RegExp('^' + spaces);
+  let spaceREExact = new RegExp('^' + spaces + '[^ ]');
+
+  let rest = '';
+
+
+  // uncomment to visualise
+  // console.log('-----')
+  // for (let i = lineno - 7; i < lineno + 7; i++) {
+  //   console.log('SNIP getRestOfExpression:' + (i == lineno ? '-->' : '   '), lines[i]);
+  // }
+
+  // if the next line has less spaces in it, then we are just at the end of the object
+  if (spaceRE.test(lines[++lineno])) {
+    do {
+      // append the whole line, since is is just the next part of the unterminated expression
+      rest = rest + lines[lineno];
+      // and delete line
+      lines[lineno] = '';
+    } while (typeof lines[lineno++] !== 'undefined' && !spaceREExact.test(lines[lineno]));
+    // loop until the line ends with a comma,
+    // then add it:
+    rest += lines[lineno].replace(/,$/, '');
+    lines[lineno] = '';
+  }
+
+  return rest;
+}
+
 let replaceKlassAttributes = (s, ctx) => {
   let lines = beautify(s).split(/\r?\n/);
   
@@ -39,11 +78,16 @@ let replaceKlassAttributes = (s, ctx) => {
   for (let i = 0; i < lines.length; i++) {
     if (/^ *klass: /.test(lines[i])) {
       lines[i] = lines[i].replace(/( *)klass: (.*)$/, (line, spaces, expr) => {
-        
-        expr = '(' + expr.replace(/,$/g, "") + ')';
+        if (!expr.endsWith(',')) {
+          expr += getRestOfExpression(i, spaces, lines);
+        }
+
+        // TODO: separate sting building into function
+        expr = '(' + expr.replace(/,$/, "") + ')';
 
         let warning = (item) => {
-           return `console.warn('Warning: [klass-loader] no matching \`klass\` attribute for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }')`;
+           return `console.warn(
+             'Warning: [klass-loader] no matching \`klass\` attribute for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }')`;
         }
 
         let splitExpr = `(${expr}).split(/ +/).map(function(c){
@@ -86,6 +130,8 @@ klass-loader error:
     -> ${this.context}/styles.css not found when \`klass\` keyword used in associated file`);
     }
   }
+
+  console.log(source);
 
   return source;
 };
