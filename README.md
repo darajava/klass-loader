@@ -3,16 +3,18 @@
 `klass-loader` is an improvement to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive structure of presentation components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
 
 ## Usage
-Once the loader is correctly installed, there is no need to import any libraries or reference CSS files. `klass` attributes are evaluated as vanilla CSS selector strings, similar to the `class` tag in HTML. This attribute can be treated as a language feature in the same way `class` was in the olden days. Usage is as follows:
+Once the loader is correctly installed, there is no need to import any libraries or reference CSS files. `klass` attributes are evaluated as vanilla CSS selector strings, similar to the `class` tag in HTML. This attribute can be treated as a language feature in the same way `class` was pre modern Javascript. Usage is as follows:
 
 ### Component.jsx
 ```javascript
 import React from 'react';
 
+let variableName = 'child';
+
 const Component = (props) => {
   return (
     <div klass='component'>
-      <div klass={'child-' + Math.floor(Math.random() * 2)}>
+      <div klass={variableName}>
         Hello!
       </div>
     </div>
@@ -28,12 +30,8 @@ export default Component;
   padding: 10px;
 }
 
-.child-0 {
+.child {
   background-color: red; 
-}
-
-.child-1 {
-  background-color: blue;
 }
 ```
  
@@ -62,11 +60,11 @@ In the `styles.css` file, the webpack implementation of `css-modules` allows us 
 ## Install & Configuration
 
 #### Install
-    npm i --save klass-loader # (doesn't exist yet, you need to build it from source at the moment)
+    npm i --save klass-loader
     
 #### Configuration
 
-Set up and install `style-loader` and `css-loader`:
+Set up and install `style-loader` and `css-loader` for your CSS files (and `less-loader` too if you use less):
 
     require.resolve('style-loader'),
     {
@@ -103,12 +101,3 @@ Next, set up `klass-loader` itself. To do this, place the loader just before `ba
 
 ## Example repo
 An example of a project using `klass-loader` can be found [here](https://github.com/darajava/language-learner).
-
-## Options
-Coming soon!
-
-## FAQ / Integration
-Coming soon!
-
-## TypeScript support
-Coming soon?
