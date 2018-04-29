@@ -41,13 +41,16 @@ let findClassNames = (lineno, spaces, lines) => {
   return '""'; 
 }; 
 
+// if the expression is more complicated, such as a function returning a string,
+// then the beautifier will put it on more than one line. We can check for this
+// by testing if the source line doesn't end in a comma and get the rest of the expression
+// by adding all proceeding source lines which are on a deeper or equal indentation level
 let getRestOfExpression = (lineno, spaces, lines) => {
   let spaceRE = new RegExp('^' + spaces);
   let spaceREExact = new RegExp('^' + spaces + '[^ ]');
 
   let rest = '';
-
-
+ 
   // uncomment to visualise
   // console.log('-----')
   // for (let i = lineno - 7; i < lineno + 7; i++) {
@@ -71,10 +74,36 @@ let getRestOfExpression = (lineno, spaces, lines) => {
   return rest;
 }
 
+let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines) => {
+  expr = '(' + expr.replace(/,$/, "") + ')';
+
+  let warning = (item) => {
+    return `
+      console.warn (
+        'Warning: [klass-loader] no matching \`klass\` attribute` + 
+          ` for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }'
+      )
+    `
+  };
+
+  let splitExpr = `
+    ${expr}.split(/ +/).map(function(c) {
+      if (typeof __k_styles[c] === "undefined") {
+        ${ warning('c') };
+      }
+      return __k_styles[c]
+    }).join(' ')
+  `;
+
+
+  return `${spaces}className: (${ splitExpr } + ' ' + ${ findClassNames(lineno, spaces, lines) }),`
+}
+
 let replaceKlassAttributes = (s, ctx) => {
   let lines = beautify(s).split(/\r?\n/);
   
-  console.log(JSON.stringify(lines, null, 2))
+  console.log(JSON.stringify(lines, null, 2));
+
   for (let i = 0; i < lines.length; i++) {
     if (/^ *klass: /.test(lines[i])) {
       lines[i] = lines[i].replace(/( *)klass: (.*)$/, (line, spaces, expr) => {
@@ -82,20 +111,7 @@ let replaceKlassAttributes = (s, ctx) => {
           expr += getRestOfExpression(i, spaces, lines);
         }
 
-        // TODO: separate sting building into function
-        expr = '(' + expr.replace(/,$/, "") + ')';
-
-        let warning = (item) => {
-           return `console.warn(
-             'Warning: [klass-loader] no matching \`klass\` attribute for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }')`;
-        }
-
-        let splitExpr = `(${expr}).split(/ +/).map(function(c){
-                                                    if (typeof __k_styles[c] === "undefined")
-                                                      ${ warning('c') };
-                                                    return __k_styles[c] }).join(' ')`;
-
-        return `${spaces}className: (${ splitExpr } + ' ' + ${ findClassNames(i, spaces, lines) }),`
+        return buildReplacementSourceLine(expr, ctx, i, spaces, lines)
       });
     }
   }
@@ -113,7 +129,7 @@ let replaceKlassAttributes = (s, ctx) => {
 
 }
 
-module.exports = function(source, map) {
+module.exports = function(source) {
   //return source;
   const options = loaderUtils.getOptions(this);
 
@@ -124,14 +140,13 @@ module.exports = function(source, map) {
       source = "import __k_styles from './styles.css';\n" + source;
       //console.log(source);
     } else {
+      console.log('got here');
         throw new Error(`
 
 klass-loader error:
     -> ${this.context}/styles.css not found when \`klass\` keyword used in associated file`);
     }
   }
-
-  console.log(source);
 
   return source;
 };

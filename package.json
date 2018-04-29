@@ -15,7 +15,6 @@
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-minify": "^0.4.0",
-    "g": "^2.0.1",
     "js-beautify": "^1.7.5",
     "loader-utils": "^1.1.0",
     "schema-utils": "^0.4.5",
@@ -23,6 +22,7 @@
     "webpack": "^4.6.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "jest": "^22.4.3"
   }
 }
