@@ -1,6 +1,6 @@
 {
   "name": "klass-loader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "tba"
+    "url": "https://github.com/darajava/klass-loader"
   },
   "author": "Dara Javaherian",
   "license": "MIT",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
     "jest": "^22.4.3"
   }
 }

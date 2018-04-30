@@ -16,13 +16,13 @@ function isValidJs(testString) {
 
 
 let context = {
-    context: 'tests',
+    context: 'tests/code/compiled',
     resourcePath: 'foo/bar/Component.js'
 };
 
 describe('run', () => {
   it('should compile a simple string', () => {
-    var text = fs.readFileSync("tests/run.js", "utf8");
+    var text = fs.readFileSync(context.context + "/string.js", "utf8");
     
     try {
       text = run.call(context, text); 
