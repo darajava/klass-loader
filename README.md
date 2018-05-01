@@ -1,5 +1,9 @@
 ![](https://i.imgur.com/S0v8XBG.png)
 
+
+![npm](https://img.shields.io/npm/v/klass-loader.svg?style=for-the-badge)
+![Travis](https://img.shields.io/travis/darajava/klass-loader.svg?style=for-the-badge)
+
 `klass-loader` is an improvement to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive structure of presentation components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
 
 ## Usage
