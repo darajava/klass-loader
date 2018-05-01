@@ -42,18 +42,17 @@ export default Component;
 This minimal setup will apply classes in a corresponding file called `styles.css` in the same directory as the component. (LESS might work too, but it's untested so far). An example hierarchy is shown here:
 
 ```
-src
-├── App.js
-│   └── views
-│       ├── NoStyleButton
-│       │   ├── NoStyleButton.js
-│       ├── Progress
-│       │   ├── Progress.js
-│       │   └── styles.css
-│       ├── Question
-│       │   ├── Question.js
-│       │   ├── Answer.js
-│       │   └── styles.css
+src/
+└── App.js
+    ├── NoStyleButton/
+    │   └── NoStyleButton.js
+    ├── Progress/
+    │   ├── Progress.js
+    │   └── styles.css
+    └── Question/
+        ├── Question.js
+        ├── Answer.js
+        └── styles.css
 ```
 
 A component *requires* a corresponding stylesheet in the same directory only if the component declares a `klass` attribute as shown above. If there are multiple components in the same folder, they will all be based on the same stylesheet.
