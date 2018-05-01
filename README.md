@@ -3,6 +3,8 @@
 
 ![npm](https://img.shields.io/npm/v/klass-loader.svg)
 ![Travis](https://img.shields.io/travis/darajava/klass-loader.svg)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/darajava/klass-loader.svg)
+
 
 `klass-loader` is an improvement to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive structure of presentation components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
 
