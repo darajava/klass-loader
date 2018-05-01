@@ -33,55 +33,160 @@ describe('run', () => {
     expect(isValidJs(text)).toBe(true);
   });
 
-  // it('should compile a simple variable', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should compile a simple variable', () => {
+    var text = fs.readFileSync(context.context + "/variable.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
 
-  // it('should compile a simple expression', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+    expect(isValidJs(text)).toBe(true);
+  });
 
-  // it('should compile a complex expression', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should compile a simple expression', () => {
+    var text = fs.readFileSync(context.context + "/expression.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
 
-  // it('should compile a really long expression', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+    expect(isValidJs(text)).toBe(true);
+  });
 
-  // it('should compile multiple classnames', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should compile a complex expression', () => {
+    var text = fs.readFileSync(context.context + "/complexExpression.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
 
-  // it('should work with className attribute', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+    expect(isValidJs(text)).toBe(true);
+  });
 
-  // it('should compile minified babel', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should compile a really long expression', () => {
+    var text = fs.readFileSync(context.context + "/longExpression.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
 
-  // it('should not contain warnings if minified', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+    expect(isValidJs(text)).toBe(true);
+  });
 
-  // it('should contain warnings if not minified', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should compile multiple classnames', () => {
+    var text = fs.readFileSync(context.context + "/multipleClassNames.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
 
-  // it('should fail without corresponding stylesheet', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+    expect(isValidJs(text)).toBe(true);
+  });
 
-  // it('should minify result when input is minified', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should work with className attribute', () => {
+    var text = fs.readFileSync(context.context + "/withClassNameAttribute.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
 
-  // it('should not minify result when input is not minified', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+    expect(isValidJs(text)).toBe(true);
+  });
 
-  // it('should not modify input when it does not mention \'klass\'', () => {
-  //   expect(run(1, 2)).toBe(3);
-  // });
+  it('should compile minified babel', () => {
+    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
+
+    expect(isValidJs(text)).toBe(true);
+  });
+
+  it('should not contain warnings if minified', () => {
+    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
+
+    expect(text.indexOf('console.warn') !== -1).toBe(false);
+  });
+
+  it('should contain warnings if not minified', () => {
+    var text = fs.readFileSync(context.context + "/expression.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
+
+    expect(text.indexOf('console.warn') !== -1).toBe(true);
+  });
+
+  it('should fail without corresponding stylesheet', () => {
+    let contextNoStyle = {
+        context: 'tests/code/compiled/noStyle',
+        resourcePath: 'foo/bar/Component.js'
+    };
+
+    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
+
+    expect(() => run.call(contextNoStyle, text)).toThrow();
+  });
+
+  it('should minify result when input is minified', () => {
+    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }      
+
+    expect(text.split(/\r?\n/).length <= 3).toBe(true);
+  });
+
+  it('should not minify result when input is not minified', () => {
+    var text = fs.readFileSync(context.context + "/expression.js", "utf8");
+    
+    try {
+      text = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
+
+    expect(text.split(/\r?\n/).length > 3).toBe(true);
+  });
+
+  it('should not modify input when it does not mention \'klass\'', () => {
+    var text = fs.readFileSync(context.context + "/noKlass.js", "utf8");
+    
+    let textOut;
+
+    try {
+      textOut = run.call(context, text); 
+    } catch (e) {
+      console.error(e);
+    }
+
+    expect(text).toEqual(textOut);
+  });
 });

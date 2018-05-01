@@ -74,23 +74,24 @@ let getRestOfExpression = (lineno, spaces, lines) => {
   return rest;
 }
 
-let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines) => {
+let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev) => {
   expr = '(' + expr.replace(/,$/, "") + ')';
 
   let warning = (item) => {
+    if (!isDev) return '';
     return `
-      console.warn (
-        'Warning: [klass-loader] no matching \`klass\` attribute` + 
-          ` for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }'
-      )
+      if (typeof __k_styles[c] === "undefined") {
+        console.warn (
+          'Warning: [klass-loader] no matching \`klass\` attribute` + 
+            ` for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }'
+        )
+      }
     `
   };
 
   let splitExpr = `
     ${expr}.split(/ +/).map(function(c) {
-      if (typeof __k_styles[c] === "undefined") {
         ${ warning('c') };
-      }
       return __k_styles[c]
     }).join(' ')
   `;
@@ -100,9 +101,12 @@ let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines) => {
 }
 
 let replaceKlassAttributes = (s, ctx) => {
+  // if the file is not minified, we can assume we're on development mode
+  let isDev = s.split(/\r?\n/).length > 3;
+
   let lines = beautify(s).split(/\r?\n/);
   
-  console.log(JSON.stringify(lines, null, 2));
+  // console.log(JSON.stringify(lines, null, 2));
 
   for (let i = 0; i < lines.length; i++) {
     if (/^ *klass: /.test(lines[i])) {
@@ -111,16 +115,17 @@ let replaceKlassAttributes = (s, ctx) => {
           expr += getRestOfExpression(i, spaces, lines);
         }
 
-        return buildReplacementSourceLine(expr, ctx, i, spaces, lines)
+        return buildReplacementSourceLine(expr, ctx, i, spaces, lines, isDev)
       });
     }
   }
 
-  // if the code does not appear to be minified
-  if (s.split(/\r?\n/).length > 5) {
+  // if the code does not appear to be minified, return unminified code
+  if (isDev) {
     return lines.join('\n');
   }
 
+  // otherwise return it minified
   return minify(lines.join('\n'), {
     mangle: {
       keepClassName: true
@@ -140,7 +145,6 @@ module.exports = function(source) {
       source = "import __k_styles from './styles.css';\n" + source;
       //console.log(source);
     } else {
-      console.log('got here');
         throw new Error(`
 
 klass-loader error:
