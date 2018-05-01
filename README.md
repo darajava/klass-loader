@@ -1,7 +1,6 @@
 ![](https://i.imgur.com/S0v8XBG.png)
 
 
-![npm](https://img.shields.io/npm/v/klass-loader.svg)
 ![Travis](https://img.shields.io/travis/darajava/klass-loader.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/darajava/klass-loader.svg)
 
