@@ -14,129 +14,78 @@ function isValidJs(testString) {
   return isValid;
 }
 
-
 let context = {
     context: 'tests/code/compiled',
     resourcePath: 'foo/bar/Component.js'
 };
 
-describe('run', () => {
-  it('should compile a simple string', () => {
-    var text = fs.readFileSync(context.context + "/string.js", "utf8");
+function returnOutputFromFile(filename) {
+    let text = fs.readFileSync(context.context + "/" + filename, "utf8");
     
     try {
-      text = run.call(context, text); 
+      return run.call(context, text); 
     } catch (e) {
       console.error(e);
     }
+}
+
+describe('run', () => {
+  it('should compile a simple string', () => {
+    let text = returnOutputFromFile('string.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should compile a simple variable', () => {
-    var text = fs.readFileSync(context.context + "/variable.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('variable.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should compile a simple expression', () => {
-    var text = fs.readFileSync(context.context + "/expression.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('expression.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should compile a complex expression', () => {
-    var text = fs.readFileSync(context.context + "/complexExpression.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('complexExpression.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should compile a really long expression', () => {
-    var text = fs.readFileSync(context.context + "/longExpression.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('longExpression.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should compile multiple classnames', () => {
-    var text = fs.readFileSync(context.context + "/multipleClassNames.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('multipleClassNames.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
-  it('should work with className attribute', () => {
-    var text = fs.readFileSync(context.context + "/withClassNameAttribute.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+  it('should compile with className attribute', () => {
+    let text = returnOutputFromFile('withClassNameAttribute.js');
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should compile minified babel', () => {
-    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('minified.js')
 
     expect(isValidJs(text)).toBe(true);
   });
 
   it('should not contain warnings if minified', () => {
-    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('minified.js')
 
     expect(text.indexOf('console.warn') !== -1).toBe(false);
   });
 
   it('should contain warnings if not minified', () => {
-    var text = fs.readFileSync(context.context + "/expression.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('expression.js')
 
     expect(text.indexOf('console.warn') !== -1).toBe(true);
   });
@@ -153,40 +102,21 @@ describe('run', () => {
   });
 
   it('should minify result when input is minified', () => {
-    var text = fs.readFileSync(context.context + "/minified.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }      
+    let text = returnOutputFromFile('minified.js')
 
     expect(text.split(/\r?\n/).length <= 3).toBe(true);
   });
 
   it('should not minify result when input is not minified', () => {
-    var text = fs.readFileSync(context.context + "/expression.js", "utf8");
-    
-    try {
-      text = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
+    let text = returnOutputFromFile('expression.js')
 
     expect(text.split(/\r?\n/).length > 3).toBe(true);
   });
 
   it('should not modify input when it does not mention \'klass\'', () => {
-    var text = fs.readFileSync(context.context + "/noKlass.js", "utf8");
+    let oldText = fs.readFileSync(context.context + "/noKlass.js", "utf8");
+    let text = returnOutputFromFile('noKlass.js')
     
-    let textOut;
-
-    try {
-      textOut = run.call(context, text); 
-    } catch (e) {
-      console.error(e);
-    }
-
-    expect(text).toEqual(textOut);
+    expect(text).toEqual(oldText);
   });
 });

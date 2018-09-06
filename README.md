@@ -91,7 +91,7 @@ Next, set up `klass-loader` itself. To do this, place the loader just before `ba
   use: [
     // other loaders
     {
-      loader: path.resolve('klass-loader'),
+      loader: require.resolve('klass-loader'),
     },
     {
       loader: require.resolve('babel-loader'),

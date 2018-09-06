@@ -19,7 +19,7 @@
     "loader-utils": "^1.1.0",
     "schema-utils": "^0.4.5",
     "uglify-js": "^3.3.22",
-    "webpack": "^4.6.0"
+    "webpack": "^4.6.0",
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

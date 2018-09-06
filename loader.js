@@ -138,17 +138,19 @@ module.exports = function(source) {
   //return source;
   const options = loaderUtils.getOptions(this);
 
+  let extension = options && options.extension ? options.extension : 'css';
+
   if (source.indexOf("klass:") !== -1) {
-    if (fs.existsSync(this.context + "/styles.css")) {
+    if (fs.existsSync(this.context + "/styles." + extension)) {
       //console.log(source);
       source = replaceKlassAttributes(source, this);
-      source = "import __k_styles from './styles.css';\n" + source;
+      source = "import __k_styles from './styles." + extension + "';\n" + source;
       //console.log(source);
     } else {
         throw new Error(`
 
 klass-loader error:
-    -> ${this.context}/styles.css not found when \`klass\` keyword used in associated file`);
+    -> ${this.context}/styles.${ extension } not found when \`klass\` keyword used in associated file`);
     }
   }
 
