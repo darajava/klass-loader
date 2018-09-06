@@ -1,8 +1,9 @@
 ![](https://i.imgur.com/S0v8XBG.png)
 
 
-![npm](https://img.shields.io/npm/v/klass-loader.svg?style=for-the-badge)
-![Travis](https://img.shields.io/travis/darajava/klass-loader.svg?style=for-the-badge)
+![Travis](https://img.shields.io/travis/darajava/klass-loader.svg)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/darajava/klass-loader.svg)
+
 
 `klass-loader` is an improvement to CSS workflow and encapsulation in React. It enforces an opinionated, yet simple and non-obtrusive structure of presentation components and corresponding stylesheets. `klass-loader` utilises `css-modules` to scope style rules and gives warnings when attempting to use a non-existent rule.
 
@@ -42,18 +43,17 @@ export default Component;
 This minimal setup will apply classes in a corresponding file called `styles.css` in the same directory as the component. (LESS might work too, but it's untested so far). An example hierarchy is shown here:
 
 ```
-src
-├── App.js
-│   └── views
-│       ├── NoStyleButton
-│       │   ├── NoStyleButton.js
-│       ├── Progress
-│       │   ├── Progress.js
-│       │   └── styles.css
-│       ├── Question
-│       │   ├── Question.js
-│       │   ├── Answer.js
-│       │   └── styles.css
+src/
+└── App.js
+    ├── NoStyleButton/
+    │   └── NoStyleButton.js
+    ├── Progress/
+    │   ├── Progress.js
+    │   └── styles.css
+    └── Question/
+        ├── Question.js
+        ├── Answer.js
+        └── styles.css
 ```
 
 A component *requires* a corresponding stylesheet in the same directory only if the component declares a `klass` attribute as shown above. If there are multiple components in the same folder, they will all be based on the same stylesheet.
