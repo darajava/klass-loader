@@ -1,4 +1,4 @@
-import React from 'react';
+let React = require('react');
 
 const Component = (props) => {
 
@@ -10,5 +10,4 @@ const Component = (props) => {
         
 }
 
-export default Component;
  

@@ -74,15 +74,15 @@ let getRestOfExpression = (lineno, spaces, lines) => {
   return rest;
 }
 
-let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev) => {
+let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev, customAttr) => {
   expr = '(' + expr.replace(/,$/, "") + ')';
 
   let warning = (item) => {
     if (!isDev) return '';
     return `
       if (typeof __k_styles[c] === "undefined") {
-        console.warn (
-          'Warning: [klass-loader] no matching \`klass\` attribute` + 
+        console.error(
+          'Warning: [klass-loader] no matching \`${ customAttr }\` attribute` + 
             ` for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }'
         )
       }
@@ -100,22 +100,26 @@ let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev) => {
   return `${spaces}className: (${ splitExpr } + ' ' + ${ findClassNames(lineno, spaces, lines) }),`
 }
 
-let replaceKlassAttributes = (s, ctx) => {
+let replaceKlassAttributes = (s, ctx, isDev, customAttr) => {
   // if the file is not minified, we can assume we're on development mode
-  let isDev = s.split(/\r?\n/).length > 3;
+  if (isDev === 'auto') {
+    isDev = s.split(/\r?\n/).length > 3;
+  } else {
+    isDev = isDev === 'true';
+  }
 
   let lines = beautify(s).split(/\r?\n/);
   
-  // console.log(JSON.stringify(lines, null, 2));
+  let attrRE = new RegExp("( *)" + customAttr + ": (.*)$");
 
   for (let i = 0; i < lines.length; i++) {
-    if (/^ *klass: /.test(lines[i])) {
-      lines[i] = lines[i].replace(/( *)klass: (.*)$/, (line, spaces, expr) => {
+    if (attrRE.test(lines[i])) {
+      lines[i] = lines[i].replace(attrRE, (line, spaces, expr) => {
         if (!expr.endsWith(',')) {
           expr += getRestOfExpression(i, spaces, lines);
         }
 
-        return buildReplacementSourceLine(expr, ctx, i, spaces, lines, isDev)
+        return buildReplacementSourceLine(expr, ctx, i, spaces, lines, isDev, customAttr)
       });
     }
   }
@@ -138,19 +142,21 @@ module.exports = function(source) {
   //return source;
   const options = loaderUtils.getOptions(this);
 
-  let extension = options && options.extension ? options.extension : 'css';
+  let extension = (options && options.extension) ? options.extension : 'css';
+  let isDev = (options && options.isDev) ? options.isDev : 'auto';
+  let customAttr = (options && options.customAttr) ? options.customAttr : 'klass';
 
-  if (source.indexOf("klass:") !== -1) {
+  if (source.indexOf(`${customAttr}:`) !== -1) {
     if (fs.existsSync(this.context + "/styles." + extension)) {
       //console.log(source);
-      source = replaceKlassAttributes(source, this);
-      source = "import __k_styles from './styles." + extension + "';\n" + source;
+      source = replaceKlassAttributes(source, this, isDev, customAttr);
+      source = "var __k_styles = require('./styles." + extension + "');\n" + source;
       //console.log(source);
     } else {
         throw new Error(`
 
 klass-loader error:
-    -> ${this.context}/styles.${ extension } not found when \`klass\` keyword used in associated file`);
+    -> ${ this.context }/styles.${ extension } not found when \`${ customAttr }\` keyword used in associated file`);
     }
   }
 

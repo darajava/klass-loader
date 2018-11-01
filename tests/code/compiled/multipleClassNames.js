@@ -1,8 +1,6 @@
-import React from 'react';
+let React = require('react');
 
 const Component = props => {
 
     return React.createElement("div", { klass: "button button2" });
 };
-
-export default Component;

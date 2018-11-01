@@ -87,7 +87,7 @@ describe('run', () => {
   it('should contain warnings if not minified', () => {
     let text = returnOutputFromFile('expression.js')
 
-    expect(text.indexOf('console.warn') !== -1).toBe(true);
+    expect(text.indexOf('console.error') !== -1).toBe(true);
   });
 
   it('should fail without corresponding stylesheet', () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+let React = require('react');
 
 const Component = props => {
 
@@ -6,5 +6,3 @@ const Component = props => {
 
     return React.createElement('div', { klass: button });
 };
-
-export default Component;
