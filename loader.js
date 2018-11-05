@@ -80,7 +80,7 @@ let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev, custo
   let warning = (item) => {
     if (!isDev) return '';
     return `
-      if (typeof __k_styles[c] === "undefined") {
+      if (c.length && typeof __k_styles[c] === "undefined") {
         console.error(
           'Warning: [klass-loader] no matching \`${ customAttr }\` attribute` + 
             ` for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }'
