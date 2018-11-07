@@ -92,7 +92,7 @@ let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev, custo
   let splitExpr = `
     ${expr}.split(/ +/).map(function(c) {
         ${ warning('c') };
-      return __k_styles[c]
+      return __k_styles[c];
     }).join(' ')
   `;
 
@@ -138,7 +138,7 @@ let replaceKlassAttributes = (s, ctx, isDev, customAttr) => {
 
 }
 
-module.exports = function(source) {
+module.exports = function(source, map) {
   //return source;
   const options = loaderUtils.getOptions(this);
 
@@ -160,5 +160,5 @@ klass-loader error:
     }
   }
 
-  return source;
+  this.callback(null, source, map)
 };
