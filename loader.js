@@ -160,5 +160,8 @@ klass-loader error:
     }
   }
 
-  this.callback(null, source, map)
+  if (this.callback)
+    return this.callback(null, source, map)
+  else
+    return source;
 };
