@@ -74,13 +74,13 @@ let getRestOfExpression = (lineno, spaces, lines) => {
   return rest;
 }
 
-let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev, customAttr) => {
+let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev, customAttr, noWarningFor) => {
   expr = '(' + expr.replace(/,$/, "") + ')';
 
   let warning = (item) => {
     if (!isDev) return '';
     return `
-      if (c.length && typeof __k_styles[c] === "undefined") {
+      if (c.length && typeof __k_styles[c] === "undefined" && c !== '${noWarningFor}') {
         console.error(
           'Warning: [klass-loader] no matching \`${ customAttr }\` attribute` + 
             ` for \\'' + ${ item } + '\\' in ${ ctx.resourcePath.replace(/.*src/, 'src') }'
@@ -100,7 +100,7 @@ let buildReplacementSourceLine = (expr, ctx, lineno, spaces, lines, isDev, custo
   return `${spaces}className: (${ splitExpr } + ' ' + ${ findClassNames(lineno, spaces, lines) }),`
 }
 
-let replaceKlassAttributes = (s, ctx, isDev, customAttr) => {
+let replaceKlassAttributes = (s, ctx, isDev, customAttr, noWarningFor) => {
   // if the file is not minified, we can assume we're on development mode
   if (isDev === 'auto') {
     isDev = s.split(/\r?\n/).length > 3;
@@ -119,7 +119,7 @@ let replaceKlassAttributes = (s, ctx, isDev, customAttr) => {
           expr += getRestOfExpression(i, spaces, lines);
         }
 
-        return buildReplacementSourceLine(expr, ctx, i, spaces, lines, isDev, customAttr)
+        return buildReplacementSourceLine(expr, ctx, i, spaces, lines, isDev, customAttr, noWarningFor)
       });
     }
   }
@@ -145,11 +145,12 @@ module.exports = function(source, map) {
   let extension = (options && options.extension) ? options.extension : 'css';
   let isDev = (options && options.isDev) ? options.isDev : 'auto';
   let customAttr = (options && options.customAttr) ? options.customAttr : 'klass';
+  let noWarningFor = (options && options.noWarningFor) ? options.noWarningFor : '';
 
   if (source.indexOf(`${customAttr}:`) !== -1) {
     if (fs.existsSync(this.context + "/styles." + extension)) {
       //console.log(source);
-      source = replaceKlassAttributes(source, this, isDev, customAttr);
+      source = replaceKlassAttributes(source, this, isDev, customAttr, noWarningFor);
       source = "var __k_styles = require('./styles." + extension + "');\n" + source;
       //console.log(source);
     } else {
